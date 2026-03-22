@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./ai-interviewer-frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
@@ -21,7 +21,7 @@ services:
 
   backend:
     build:
-      context: ./ai-interviewer-backend
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
