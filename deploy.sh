@@ -121,7 +121,7 @@ check_status() {
     fi
 
     # 检查前端
-    if curl -sf http://localhost:3000/health > /dev/null; then
+    if curl -sf http://localhost:3000/ > /dev/null; then
         echo -e "${GREEN}✓${NC} 前端服务正常"
     else
         echo -e "${RED}✗${NC} 前端服务异常"
