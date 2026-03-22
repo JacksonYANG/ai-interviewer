@@ -61,7 +61,7 @@ setup_env() {
     if [ ! -f .env ]; then
         cat > .env << EOF
 # 数据库配置
-DATABASE_URL=sqlite:///data/database.db
+DATABASE_URL=sqlite+aiosqlite:///data/database.db
 
 # JWT密钥 (生产环境请修改)
 SECRET_KEY=$(openssl rand -hex 32)

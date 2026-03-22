@@ -24,7 +24,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite:///data/database.db
+      - DATABASE_URL=sqlite+aiosqlite:///data/database.db
       - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-this-in-production}
       - ACCESS_TOKEN_EXPIRE_MINUTES=30
       - REFRESH_TOKEN_EXPIRE_DAYS=7
