@@ -121,7 +121,8 @@ function Register() {
                   }
                   return Promise.reject(new Error('两次输入的密码不一致'))
                 },
-              })}
+              }),
+            ]}
           >
             <Input.Password
               prefix={<LockOutlined />}
