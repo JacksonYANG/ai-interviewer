@@ -34,7 +34,7 @@ function Dashboard() {
   }, [])
 
   return (
-    <div style={{ padding: '24px', background: '#f0f2f5', minHeight: '100vh' }}>
+    <div>
       <Title level={2}>面试系统仪表盘</Title>
 
       <Row gutter={[16, 16]}>
