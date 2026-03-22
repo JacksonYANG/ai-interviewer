@@ -3,34 +3,46 @@ import Dashboard from '@/pages/Dashboard/Dashboard'
 import InterviewConfig from '@/pages/InterviewConfig/InterviewConfig'
 import InterviewList from '@/pages/InterviewList/InterviewList'
 import InterviewExecution from '@/pages/InterviewExecution/InterviewExecution'
+import Login from '@/pages/Login/Login'
+import Register from '@/pages/Register/Register'
+import MainLayout from '@/components/Layout/MainLayout'
+import ProtectedRoute from '@/components/ProtectedRoute/ProtectedRoute'
 
 function Router() {
   return (
     <Routes>
-      {/* 默认路由重定向到 Dashboard */}
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* 认证相关路由 - 不使用MainLayout */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
-      {/* Dashboard 页面 */}
-      <Route path="/dashboard" element={<Dashboard />} />
-
-      {/* 面试配置相关路由 */}
-      <Route path="/interview-config" element={<InterviewConfig />} />
-      <Route path="/interview-config/:id" element={<InterviewConfig />} />
-      <Route path="/interviews" element={<InterviewList />} />
-
-      {/* 面试执行路由 */}
+      {/* 受保护的路由 - 使用MainLayout */}
       <Route
-        path="/interview/:configId/round/:roundId/execute"
-        element={<InterviewExecution />}
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Routes>
+                {/* Dashboard 页面 */}
+                <Route path="/dashboard" element={<Dashboard />} />
+
+                {/* 面试配置相关路由 */}
+                <Route path="/interview-config" element={<InterviewConfig />} />
+                <Route path="/interview-config/:id" element={<InterviewConfig />} />
+                <Route path="/interviews" element={<InterviewList />} />
+
+                {/* 面试执行路由 */}
+                <Route
+                  path="/interview/:configId/round/:roundId/execute"
+                  element={<InterviewExecution />}
+                />
+
+                {/* 默认路由重定向到 Dashboard */}
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+              </Routes>
+            </MainLayout>
+          </ProtectedRoute>
+        }
       />
-
-      {/* 后续会添加 Login, Register, Report 等路由 */}
-      {/* <Route path="/login" element={<Login />} /> */}
-      {/* <Route path="/register" element={<Register />} /> */}
-      {/* <Route path="/report/:sessionId" element={<Report />} /> */}
-
-      {/* 404 页面 */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
 }

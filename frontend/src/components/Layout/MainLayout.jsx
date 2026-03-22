@@ -1,11 +1,11 @@
 import { useState } from 'react'
-import { Layout, Menu, theme } from 'antd'
+import { Layout, Menu, theme, Button, Dropdown } from 'antd'
 import {
   DashboardOutlined,
   SettingOutlined,
-  PlayCircleOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -36,12 +36,6 @@ function MainLayout({ children }) {
       icon: <UnorderedListOutlined />,
       label: '面试列表',
     },
-    {
-      key: '/user',
-      icon: <UserOutlined />,
-      label: '个人中心',
-      disabled: true,
-    },
   ]
 
   const handleMenuClick = ({ key }) => {
@@ -55,6 +49,22 @@ function MainLayout({ children }) {
     if (path.startsWith('/interview/')) return '/interviews'
     return path
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('user_id')
+    navigate('/login')
+  }
+
+  const userMenuItems = [
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: '退出登录',
+      onClick: handleLogout,
+    },
+  ]
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -82,14 +92,19 @@ function MainLayout({ children }) {
       <Layout>
         <Header
           style={{
-            padding: 0,
+            padding: '0 24px',
             background: colorBgContainer,
             display: 'flex',
             alignItems: 'center',
-            paddingLeft: '24px',
+            justifyContent: 'space-between',
           }}
         >
           <h2 style={{ margin: 0 }}>智能面试练习系统</h2>
+          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+            <Button icon={<UserOutlined />}>
+              个人中心
+            </Button>
+          </Dropdown>
         </Header>
         <Content
           style={{

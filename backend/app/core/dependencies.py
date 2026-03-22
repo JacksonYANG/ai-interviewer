@@ -1,8 +1,8 @@
 """
 核心依赖项
 """
-from typing import Generator
-from fastapi import Depends, HTTPException, status
+from typing import Generator, Optional
+from fastapi import Depends, HTTPException, status, Header
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.user import User
@@ -10,14 +10,30 @@ from app.core.security import decode_token
 
 
 async def get_current_user(
-    token: str,
+    authorization: Optional[str] = Header(None),
     db: Session = Depends(get_db)
 ) -> User:
     """
     获取当前用户
 
     通过JWT token获取当前登录用户
+    Token从Authorization header读取，格式：Bearer <token>
     """
+    # 提取token
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="未提供认证凭证"
+        )
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="认证凭证格式错误"
+        )
+
+    token = authorization.split(" ")[1]
+
     try:
         payload = decode_token(token)
 
@@ -45,6 +61,8 @@ async def get_current_user(
 
         return user
 
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
