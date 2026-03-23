@@ -1,24 +1,51 @@
-import { useState } from 'react'
-import { Layout, Menu, theme, Button, Dropdown } from 'antd'
+import { useState, useEffect } from 'react'
+import { Layout, Menu, theme, Button, Dropdown, message } from 'antd'
 import {
   DashboardOutlined,
   SettingOutlined,
   UnorderedListOutlined,
   UserOutlined,
   LogoutOutlined,
+  KeyOutlined,
 } from '@ant-design/icons'
 import { useNavigate, useLocation } from 'react-router-dom'
+import apiClient from '@/services/api'
 
 const { Header, Content, Sider } = Layout
 
 function MainLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
+  const [userRole, setUserRole] = useState('user')
   const navigate = useNavigate()
   const location = useLocation()
 
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
+
+  useEffect(() => {
+    // 获取用户信息
+    const fetchUserInfo = async () => {
+      try {
+        const user_id = localStorage.getItem('user_id')
+        if (user_id) {
+          // 这里可以添加获取用户信息的API
+          // 暂时从localStorage读取（登录时应该保存用户角色）
+          const token = localStorage.getItem('token')
+          if (token) {
+            // 解析token获取用户信息（简化版）
+            // 实际应该调用API获取用户信息
+            const payload = JSON.parse(atob(token.split('.')[1]))
+            // 这里可以添加获取用户角色的逻辑
+          }
+        }
+      } catch (error) {
+        console.error('获取用户信息失败', error)
+      }
+    }
+
+    fetchUserInfo()
+  }, [])
 
   const menuItems = [
     {
@@ -38,7 +65,21 @@ function MainLayout({ children }) {
     },
   ]
 
+  // 只有管理员才能看到的管理菜单
+  if (userRole === 'admin') {
+    menuItems.push({
+      key: '/admin/invitation-codes',
+      icon: <KeyOutlined />,
+      label: '邀请码管理',
+    })
+  }
+
   const handleMenuClick = ({ key }) => {
+    // 检查管理员权限
+    if (key === '/admin/invitation-codes' && userRole !== 'admin') {
+      message.warning('只有管理员可以访问此页面')
+      return
+    }
     navigate(key)
   }
 
@@ -47,6 +88,7 @@ function MainLayout({ children }) {
     const path = location.pathname
     if (path.startsWith('/interview-config')) return '/interview-config'
     if (path.startsWith('/interview/')) return '/interviews'
+    if (path.startsWith('/admin/')) return path
     return path
   }
 
@@ -102,7 +144,7 @@ function MainLayout({ children }) {
           <h2 style={{ margin: 0 }}>智能面试练习系统</h2>
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Button icon={<UserOutlined />}>
-              个人中心
+              {userRole === 'admin' ? '管理员' : '个人中心'}
             </Button>
           </Dropdown>
         </Header>

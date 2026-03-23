@@ -5,6 +5,7 @@ import InterviewList from '@/pages/InterviewList/InterviewList'
 import InterviewExecution from '@/pages/InterviewExecution/InterviewExecution'
 import Login from '@/pages/Login/Login'
 import Register from '@/pages/Register/Register'
+import AdminInvitationCodes from '@/pages/Admin/AdminInvitationCodes'
 import MainLayout from '@/components/Layout/MainLayout'
 import ProtectedRoute from '@/components/ProtectedRoute/ProtectedRoute'
 
@@ -35,6 +36,9 @@ function Router() {
                   path="/interview/:configId/round/:roundId/execute"
                   element={<InterviewExecution />}
                 />
+
+                {/* 管理员路由 - 仅管理员可访问 */}
+                <Route path="/admin/invitation-codes" element={<AdminInvitationCodes />} />
 
                 {/* 默认路由重定向到 Dashboard */}
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
