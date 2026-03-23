@@ -12,6 +12,12 @@ from ...core.security import create_access_token, create_refresh_token, decode_t
 router = APIRouter(prefix="/auth", tags=["认证"])
 
 
+@router.get("/test")
+async def test_auth():
+    """测试认证端点是否工作"""
+    return {"message": "auth endpoint works", "status": "ok"}
+
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     user_data: UserRegister,

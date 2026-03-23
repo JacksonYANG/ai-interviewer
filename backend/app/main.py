@@ -3,7 +3,7 @@ AI面试官后端主应用程序
 """
 from fastapi import FastAPI
 from .api.v1 import router as api_v1_router
-from .api.v1 import admin as admin_router
+from .api.v1.admin import router as admin_router
 from .middleware.security import setup_security_middleware
 from .middleware.rate_limit import rate_limit_middleware
 from .core.logger import get_logger
