@@ -242,8 +242,8 @@ def setup_security_middleware(app):
     # 安全头中间件
     app.add_middleware(SecurityHeadersMiddleware)
 
-    # 输入验证中间件
-    app.add_middleware(InputValidationMiddleware)
+    # 输入验证中间件（暂时禁用以排查请求体读取问题）
+    # app.add_middleware(InputValidationMiddleware)
 
     # 请求大小限制中间件
     app.add_middleware(SizeLimitMiddleware, max_request_size=10 * 1024 * 1024)

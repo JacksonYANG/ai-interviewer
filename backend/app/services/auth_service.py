@@ -117,9 +117,8 @@ class AuthService:
         if not user.verify_password(password):
             return None
 
-        # 更新最后登录时间
-        user.last_login = datetime.now(timezone.utc)
-        await self.db.commit()
+        # 注意：不在这里提交事务，让get_db的上下文管理器自动处理
+        # 避免在只读操作中提交事务可能导致的问题
 
         return user
 

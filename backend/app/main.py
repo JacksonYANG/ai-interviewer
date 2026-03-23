@@ -16,11 +16,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 设置安全中间件
-setup_security_middleware(app)
+# 设置安全中间件（暂时禁用以排查问题）
+# setup_security_middleware(app)
 
-# 添加限流中间件
-app.middleware("http")(rate_limit_middleware)
+# 添加限流中间件（暂时禁用以排查问题）
+# app.middleware("http")(rate_limit_middleware)
 
 # 包含API路由
 app.include_router(api_v1_router)
