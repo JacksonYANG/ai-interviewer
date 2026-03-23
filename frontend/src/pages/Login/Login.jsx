@@ -3,6 +3,7 @@ import { Form, Input, Button, Card, Typography, message, Tabs } from 'antd'
 import { UserOutlined, LockOutlined, MailOutlined, KeyOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router-dom'
 import apiClient from '@/services/api'
+import '../../styles/theme.css'
 
 const { Title, Text } = Typography
 
@@ -14,7 +15,7 @@ function Login() {
     setLoading(true)
     try {
       const response = await apiClient.post('/auth/login', {
-        username: values.username,
+        email: values.email,
         password: values.password,
       })
 
@@ -40,61 +41,108 @@ function Login() {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      background: 'var(--color-bg-secondary)',
     }}>
       <Card
         style={{
           width: 400,
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+          border: '1px solid var(--color-border)',
+          borderRadius: 16,
+        }}
+        bodyStyle={{
+          padding: 40,
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <Title level={2}>智能面试练习系统</Title>
-          <Text type="secondary">请登录您的账号</Text>
+        <div style={{ textAlign: 'center', marginBottom: 32 }}>
+          <Title
+            level={2}
+            style={{
+              marginBottom: 8,
+              fontSize: 24,
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+            }}
+          >
+            智能面试练习系统
+          </Title>
+          <Text type="secondary" style={{ fontSize: 14 }}>
+            请登录您的账号
+          </Text>
         </div>
 
         <Form
           name="login"
           onFinish={handleLogin}
           autoComplete="off"
+          layout="vertical"
         >
           <Form.Item
-            name="username"
-            rules={[{ required: true, message: '请输入用户名' }]}
+            name="email"
+            rules={[
+              { required: true, message: '请输入邮箱' },
+              { type: 'email', message: '请输入有效的邮箱地址' }
+            ]}
+            style={{ marginBottom: 16 }}
           >
             <Input
-              prefix={<UserOutlined />}
-              placeholder="用户名"
+              prefix={<MailOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
+              placeholder="邮箱"
               size="large"
+              style={{
+                borderRadius: 8,
+                padding: '12px 16px',
+              }}
             />
           </Form.Item>
 
           <Form.Item
             name="password"
             rules={[{ required: true, message: '请输入密码' }]}
+            style={{ marginBottom: 24 }}
           >
             <Input.Password
-              prefix={<LockOutlined />}
+              prefix={<LockOutlined style={{ color: 'var(--color-text-tertiary)' }} />}
               placeholder="密码"
               size="large"
+              style={{
+                borderRadius: 8,
+                padding: '12px 16px',
+              }}
             />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item style={{ marginBottom: 16 }}>
             <Button
               type="primary"
               htmlType="submit"
               loading={loading}
               size="large"
               block
+              style={{
+                height: 44,
+                borderRadius: 8,
+                fontWeight: 500,
+              }}
             >
               登录
             </Button>
           </Form.Item>
 
-          <div style={{ textAlign: 'center' }}>
-            <Text>还没有账号？</Text>{' '}
-            <a onClick={() => navigate('/register')}>立即注册</a>
+          <div style={{ textAlign: 'center', fontSize: 14 }}>
+            <Text style={{ color: 'var(--color-text-secondary)' }}>
+              还没有账号？
+            </Text>{' '}
+            <a
+              onClick={() => navigate('/register')}
+              style={{
+                color: 'var(--color-primary)',
+                fontWeight: 500,
+                cursor: 'pointer',
+              }}
+            >
+              立即注册
+            </a>
           </div>
         </Form>
       </Card>

@@ -40,12 +40,13 @@ def get_password_hash(password: str) -> str:
     return hashed.decode('utf-8')
 
 
-def create_access_token(user_id: int, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(user_id: int, role: str = 'user', expires_delta: Optional[timedelta] = None) -> str:
     """
     创建访问Token
 
     Args:
         user_id: 用户ID
+        role: 用户角色
         expires_delta: 过期时间增量
 
     Returns:
@@ -59,6 +60,7 @@ def create_access_token(user_id: int, expires_delta: Optional[timedelta] = None)
     to_encode = {
         "exp": expire,
         "sub": str(user_id),
+        "role": role,
         "type": "access"
     }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)

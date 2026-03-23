@@ -32,17 +32,52 @@ apiClient.interceptors.response.use(
   (response) => {
     return response.data
   },
-  (error) => {
-    const errorMessage = error.response?.data?.detail || error.message || '请求失败'
+  async (error) => {
+    const originalRequest = error.config
 
-    // 特殊处理 401 错误
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-      return Promise.reject(error)
+    // 特殊处理 401 错误 - 尝试刷新token
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = localStorage.getItem('refresh_token')
+
+      if (refreshToken) {
+        try {
+          // 尝试使用refresh_token获取新的access_token
+          const response = await axios.post(
+            `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'}/auth/refresh`,
+            { refresh_token: refreshToken }
+          )
+
+          const { access_token, refresh_token: newRefreshToken } = response.data
+
+          // 保存新token
+          localStorage.setItem('token', access_token)
+          if (newRefreshToken) {
+            localStorage.setItem('refresh_token', newRefreshToken)
+          }
+
+          // 更新请求头中的token
+          originalRequest.headers.Authorization = `Bearer ${access_token}`
+          originalRequest._retry = true
+
+          // 重试原请求
+          return apiClient(originalRequest)
+        } catch (refreshError) {
+          // 刷新失败，清除所有token并重定向到登录页
+          localStorage.removeItem('token')
+          localStorage.removeItem('refresh_token')
+          localStorage.removeItem('user_id')
+          window.location.href = '/login'
+          return Promise.reject(refreshError)
+        }
+      } else {
+        // 没有refresh_token，直接重定向到登录页
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+      }
     }
 
-    // 显示错误消息
+    // 其他错误
+    const errorMessage = error.response?.data?.detail || error.message || '请求失败'
     message.error(errorMessage)
 
     return Promise.reject(error)

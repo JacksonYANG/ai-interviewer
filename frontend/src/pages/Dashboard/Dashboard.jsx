@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, Row, Col, Statistic, Typography } from 'antd'
+import { Row, Col, Typography } from 'antd'
+import StatCard from '@/components/Dashboard/StatCard'
 
 const { Title } = Typography
 
@@ -35,49 +36,55 @@ function Dashboard() {
 
   return (
     <div>
-      <Title level={2}>面试系统仪表盘</Title>
+      <Title
+        level={2}
+        style={{
+          marginBottom: 32,
+          fontSize: 24,
+          fontWeight: 600,
+          color: 'var(--color-text-primary)',
+        }}
+      >
+        面试系统仪表盘
+      </Title>
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={12} md={6}>
-          <Card loading={loading}>
-            <Statistic
-              title="总面试次数"
-              value={stats?.totalInterviews || 0}
-              valueStyle={{ color: '#3f8600' }}
-            />
-          </Card>
+      {/* 统计卡片网格：2x2布局 */}
+      <Row gutter={[24, 24]}>
+        <Col xs={24} sm={12} lg={12}>
+          <StatCard
+            label="总面试次数"
+            value={stats?.totalInterviews || 0}
+            variant="primary"
+            loading={loading}
+          />
         </Col>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card loading={loading}>
-            <Statistic
-              title="已完成面试"
-              value={stats?.completedInterviews || 0}
-              valueStyle={{ color: '#1890ff' }}
-            />
-          </Card>
+        <Col xs={24} sm={12} lg={12}>
+          <StatCard
+            label="已完成面试"
+            value={stats?.completedInterviews || 0}
+            variant="info"
+            loading={loading}
+          />
         </Col>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card loading={loading}>
-            <Statistic
-              title="平均分数"
-              value={stats?.averageScore || 0}
-              precision={1}
-              suffix="分"
-              valueStyle={{ color: '#cf1322' }}
-            />
-          </Card>
+        <Col xs={24} sm={12} lg={12}>
+          <StatCard
+            label="平均分数"
+            value={stats?.averageScore || 0}
+            unit="分"
+            variant="success"
+            loading={loading}
+          />
         </Col>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card loading={loading}>
-            <Statistic
-              title="待完成面试"
-              value={stats?.pendingInterviews || 0}
-              valueStyle={{ color: '#faad14' }}
-            />
-          </Card>
+        <Col xs={24} sm={12} lg={12}>
+          <StatCard
+            label="待完成面试"
+            value={stats?.pendingInterviews || 0}
+            variant="warning"
+            loading={loading}
+          />
         </Col>
       </Row>
 

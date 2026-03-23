@@ -48,7 +48,7 @@ async def register(
         )
 
     # 生成Token
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
 
     return TokenResponse(
@@ -77,7 +77,7 @@ async def login(
         )
 
     # 生成Token
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, user.role)
     refresh_token = create_refresh_token(user.id)
 
     return TokenResponse(
@@ -113,7 +113,7 @@ async def refresh_token(
         )
 
     # 生成新的Token
-    access_token = create_access_token(user.id)
+    access_token = create_access_token(user.id, user.role)
     new_refresh_token = create_refresh_token(user.id)
 
     return TokenResponse(

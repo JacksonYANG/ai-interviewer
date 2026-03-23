@@ -16,8 +16,8 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# 设置安全中间件（暂时禁用以排查问题）
-# setup_security_middleware(app)
+# 设置安全中间件（包含CORS配置）
+setup_security_middleware(app)
 
 # 添加限流中间件（暂时禁用以排查问题）
 # app.middleware("http")(rate_limit_middleware)

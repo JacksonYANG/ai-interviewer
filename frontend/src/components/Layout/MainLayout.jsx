@@ -13,15 +13,13 @@ import apiClient from '@/services/api'
 
 const { Header, Content, Sider } = Layout
 
+import '../../styles/theme.css'
+
 function MainLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [userRole, setUserRole] = useState('user')
   const navigate = useNavigate()
   const location = useLocation()
-
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken()
 
   useEffect(() => {
     // 获取用户信息
@@ -36,7 +34,10 @@ function MainLayout({ children }) {
             // 解析token获取用户信息（简化版）
             // 实际应该调用API获取用户信息
             const payload = JSON.parse(atob(token.split('.')[1]))
-            // 这里可以添加获取用户角色的逻辑
+            // 从token中提取用户角色
+            if (payload.role) {
+              setUserRole(payload.role)
+            }
           }
         }
       } catch (error) {
@@ -109,52 +110,87 @@ function MainLayout({ children }) {
   ]
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed}>
+    <Layout style={{ minHeight: '100vh', background: 'var(--color-bg-secondary)' }}>
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        width={180}
+        style={{
+          background: 'var(--color-bg-primary)',
+          borderRight: '1px solid var(--color-border)',
+          overflow: 'auto',
+        }}
+        trigger={null}
+      >
         <div
           style={{
-            height: 32,
-            margin: 16,
-            color: '#fff',
-            fontSize: 20,
-            fontWeight: 'bold',
-            textAlign: 'center',
+            height: 64,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 16px',
+            color: 'var(--color-text-primary)',
+            fontSize: collapsed ? 18 : 16,
+            fontWeight: 700,
+            borderBottom: '1px solid var(--color-border)',
           }}
         >
           {collapsed ? 'AI' : 'AI面试官'}
         </div>
         <Menu
-          theme="dark"
           selectedKeys={[getSelectedKey()]}
           mode="inline"
           items={menuItems}
           onClick={handleMenuClick}
+          style={{
+            background: 'transparent',
+            borderRight: 'none',
+            paddingTop: 16,
+          }}
         />
       </Sider>
       <Layout>
         <Header
           style={{
-            padding: '0 24px',
-            background: colorBgContainer,
+            padding: '0 32px',
+            background: 'var(--color-bg-primary)',
+            borderBottom: '1px solid var(--color-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            height: 64,
           }}
         >
-          <h2 style={{ margin: 0 }}>智能面试练习系统</h2>
+          <h2 style={{
+            margin: 0,
+            fontSize: 18,
+            fontWeight: 600,
+            color: 'var(--color-text-primary)'
+          }}>
+            智能面试练习系统
+          </h2>
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <Button icon={<UserOutlined />}>
+            <Button
+              icon={<UserOutlined />}
+              style={{
+                border: '1px solid var(--color-border)',
+                borderRadius: 8,
+                height: 36,
+              }}
+            >
               {userRole === 'admin' ? '管理员' : '个人中心'}
             </Button>
           </Dropdown>
         </Header>
         <Content
           style={{
-            margin: '24px 16px',
-            padding: 24,
+            margin: 24,
+            padding: 32,
             minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
+            background: 'var(--color-bg-primary)',
+            border: '1px solid var(--color-border)',
+            borderRadius: 12,
           }}
         >
           {children}

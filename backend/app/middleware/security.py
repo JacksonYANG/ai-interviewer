@@ -220,32 +220,19 @@ def setup_security_middleware(app):
     Args:
         app: FastAPI应用实例
     """
-    # CORS中间件
+    # CORS中间件 - 只启用CORS来修复网络错误
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:3000"],  # 前端地址
+        allow_origins=[
+            "http://localhost:5173",   # Vite dev server
+            "http://localhost:3000",    # 可能的生产前端
+            "http://localhost",         # Nginx代理
+            "http://localhost:80"       # 明确指定80端口
+        ],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["X-RateLimit-Remaining", "X-RateLimit-Limit"]
     )
 
-    # 可信主机中间件
-    app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "*"]  # 生产环境应该限制具体域名
-    )
-
-    # GZip压缩中间件
-    app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-    # 安全头中间件
-    app.add_middleware(SecurityHeadersMiddleware)
-
-    # 输入验证中间件（暂时禁用以排查请求体读取问题）
-    # app.add_middleware(InputValidationMiddleware)
-
-    # 请求大小限制中间件
-    app.add_middleware(SizeLimitMiddleware, max_request_size=10 * 1024 * 1024)
-
-    logger.info("安全中间件已配置")
+    logger.info("CORS中间件已配置")
