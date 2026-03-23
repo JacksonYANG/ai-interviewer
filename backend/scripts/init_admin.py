@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta
 import secrets
 
@@ -20,8 +20,8 @@ from app.models.user import User
 from app.models.invitation_code import InvitationCode
 from app.core.security import create_access_token, create_refresh_token
 
-# 数据库连接
-DATABASE_URL = "sqlite+aiosqlite:///./data/database.db"
+# 数据库连接（使用同步sqlite3驱动用于脚本）
+DATABASE_URL = "sqlite:///./data/database.db"
 
 def init_database():
     """初始化数据库"""
@@ -31,7 +31,6 @@ def init_database():
 
 def create_super_admin(db_session):
     """创建超级管理员账号"""
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     # 强密码：至少16位，包含大小写字母、数字和特殊字符
     strong_password = "AI-Interview-Admin#2026!Secure"
@@ -42,11 +41,17 @@ def create_super_admin(db_session):
         print("✅ 超级管理员已存在")
         return existing_admin
 
+    # 使用bcrypt生成密码哈希
+    password_bytes = strong_password.encode('utf-8')
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+    password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
+
     # 创建超级管理员
     admin = User(
         username="admin",
         email="admin@ai-interviewer.local",
-        password_hash=pwd_context.hash(strong_password),
+        password_hash=password_hash,
         role="admin",
         account_type="admin",
         email_verified=True,
