@@ -1,7 +1,7 @@
 """
 问题数据模型
 """
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime, ForeignKey
 from datetime import datetime, timezone
 from ..database import Base
 
@@ -17,5 +17,9 @@ class Question(Base):
     question_text = Column(String(2000), nullable=False)
     interviewer_role = Column(String(100), nullable=False)
     question_type = Column(String(50))
+    category = Column(String(20), default="技术")
+    difficulty = Column(String(10), default="中等")
+    expected_key_points = Column(Text, nullable=True)
+    display_order = Column(Integer, nullable=False, default=0)
     ai_generated = Column(Boolean, default=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)

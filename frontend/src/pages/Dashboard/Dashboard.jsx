@@ -9,29 +9,23 @@ function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: 从后端 API 加载统计数据
-    // const fetchStats = async () => {
-    //   try {
-    //     const response = await axios.get('/api/stats')
-    //     setStats(response.data)
-    //   } catch (error) {
-    //     console.error('获取统计数据失败:', error)
-    //   } finally {
-    //     setLoading(false)
-    //   }
-    // }
-    // fetchStats()
-
-    // 临时模拟数据
-    setTimeout(() => {
-      setStats({
-        totalInterviews: 12,
-        completedInterviews: 8,
-        averageScore: 85.5,
-        pendingInterviews: 4,
-      })
-      setLoading(false)
-    }, 500)
+    const fetchStats = async () => {
+      try {
+        const { getUserStats } = await import('@/services/interviewService')
+        const data = await getUserStats()
+        setStats({
+          totalInterviews: data.total_interviews,
+          completedInterviews: data.completed_interviews,
+          averageScore: data.average_score,
+          pendingInterviews: data.pending_interviews,
+        })
+      } catch (error) {
+        console.error('获取统计数据失败:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStats()
   }, [])
 
   return (

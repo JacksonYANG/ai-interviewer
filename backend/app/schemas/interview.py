@@ -159,13 +159,16 @@ class QuestionResponse(BaseModel):
 
     id: int
     session_id: int
+    round_number: int
+    question_number: int
     question_text: str
-    question_type: str
+    interviewer_role: str
+    question_type: Optional[str]
     category: Optional[str]
     difficulty: Optional[str]
-    expected_points: Optional[str]
-    time_limit: Optional[int]
+    expected_key_points: Optional[str]
     display_order: int
+    ai_generated: bool
 
 
 class AnswerSubmit(BaseModel):
@@ -289,3 +292,23 @@ class InterviewReportResponse(BaseModel):
 
     # 生成时间
     generated_at: datetime
+
+
+# ==================== 问题生成相关 ====================
+
+class QuestionGenerationRequest(BaseModel):
+    """问题生成请求"""
+    position_name: str = Field(..., min_length=2, max_length=200)
+    job_description: str = Field(..., min_length=10, max_length=2000)
+    interviewer_role: str = Field(..., min_length=2, max_length=100)
+    role_description: Optional[str] = Field(None, max_length=1000)
+    question_count: int = Field(6, ge=3, le=10)
+    round_number: int = Field(1, ge=1)
+
+
+class GeneratedQuestion(BaseModel):
+    """AI 生成的单个问题"""
+    question_text: str
+    category: str = "技术"
+    difficulty: str = "中等"
+    expected_key_points: List[str] = []

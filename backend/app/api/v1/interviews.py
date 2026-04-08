@@ -3,6 +3,7 @@
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List
 from datetime import datetime
 
@@ -35,6 +36,8 @@ from app.schemas.interview import (
     ScoreDetailResponse,
     InterviewReportResponse,
 )
+import json as json_module
+from app.services.question_generation_service import QuestionGenerationService
 from app.services.ai_service import AIService
 from app.services.scoring_service import ScoringService
 from app.services.report_service import ReportGenerationService
@@ -557,9 +560,52 @@ async def create_interview_session(
         db.commit()
         db.refresh(db_session)
 
-        # TODO: 使用AI生成问题
-        # 这里需要调用AI服务，根据轮次信息生成问题
-        # 暂时创建占位问题
+        # 使用 AI 生成问题
+        try:
+            # 获取 LLM 配置
+            import os
+            llm_config = LLMConfig(
+                provider="openai",
+                api_key=os.getenv("LLM_API_KEY", ""),
+                base_url="https://www.dmxapi.cn/v1/chat/completions",
+                model_name="qwen3.5-plus",
+                temperature=0.8,
+                max_tokens=3000
+            )
+
+            qg_service = QuestionGenerationService(llm_config)
+            generated = await qg_service.generate_questions(
+                position_name=config.position_name,
+                job_description=config.job_description or "",
+                interviewer_role=round_obj.interviewer_role,
+                role_description=round_obj.role_description or "",
+                question_count=round_obj.question_count,
+                round_number=round_obj.round_number,
+                previous_questions=[]
+            )
+            await qg_service.close()
+
+            # 批量创建问题
+            for i, q in enumerate(generated):
+                db_question = Question(
+                    session_id=db_session.id,
+                    round_number=round_obj.round_number,
+                    question_number=i + 1,
+                    question_text=q["question_text"],
+                    interviewer_role=round_obj.interviewer_role,
+                    question_type=q.get("category", "技术"),
+                    category=q.get("category", "技术"),
+                    difficulty=q.get("difficulty", "中等"),
+                    expected_key_points=json_module.dumps(q.get("expected_key_points", [])),
+                    display_order=i + 1,
+                    ai_generated=True
+                )
+                db.add(db_question)
+
+            db.commit()
+        except Exception as e:
+            logger.error(f"问题生成失败，使用空问题列表: {str(e)}")
+            db.commit()
 
         logger.info(f"用户 {current_user.id} 创建面试会话 {db_session.id}")
 
@@ -1033,3 +1079,49 @@ async def transcribe_audio(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"音频转录失败: {str(e)}"
         )
+
+
+# ==================== 用户统计相关 ====================
+
+@router.get("/users/me/stats")
+async def get_user_stats(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    获取当前用户的面试统计
+
+    返回: 总面试次数、已完成次数、平均分、待完成次数
+    """
+    # 总面试会话数
+    total_sessions = db.query(InterviewSession).filter(
+        InterviewSession.user_id == current_user.id
+    ).count()
+
+    # 已完成的面试
+    completed_sessions = db.query(InterviewSession).filter(
+        InterviewSession.user_id == current_user.id,
+        InterviewSession.status == "completed"
+    ).count()
+
+    # 进行中的面试
+    in_progress = db.query(InterviewSession).filter(
+        InterviewSession.user_id == current_user.id,
+        InterviewSession.status == "in_progress"
+    ).count()
+
+    # 平均分（只计算已完成的）
+    avg_result = db.query(func.avg(InterviewSession.overall_score)).filter(
+        InterviewSession.user_id == current_user.id,
+        InterviewSession.status == "completed",
+        InterviewSession.overall_score.isnot(None)
+    ).scalar()
+
+    average_score = round(avg_result, 1) if avg_result else 0.0
+
+    return {
+        "total_interviews": total_sessions,
+        "completed_interviews": completed_sessions,
+        "pending_interviews": in_progress,
+        "average_score": average_score
+    }

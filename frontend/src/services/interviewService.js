@@ -147,3 +147,21 @@ export const completeSession = async (sessionId, data = {}) => {
   return await apiClient.post(`/interviews/sessions/${sessionId}/complete`, data)
 }
 
+/**
+ * 获取会话报告
+ * @param {number} sessionId - 会话 ID
+ * @returns {Promise<Object>} 报告数据
+ */
+export const getSessionReport = async (sessionId) => {
+  return await apiClient.get(`/interviews/sessions/${sessionId}/report`)
+}
+
+// ==================== 用户统计相关 ====================
+
+/**
+ * 获取用户面试统计
+ * @returns {Promise<Object>} 统计数据
+ */
+export const getUserStats = async () => {
+  return await apiClient.get('/interviews/users/me/stats')
+}

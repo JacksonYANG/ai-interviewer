@@ -8,7 +8,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     """应用程序配置"""
-    model_config = ConfigDict(env_file=".env", case_sensitive=True)
+    model_config = ConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
     # 应用基本信息
     APP_NAME: str = "AI面试官系统"
@@ -39,6 +39,21 @@ class Settings(BaseSettings):
 
     # 邀请码配置
     INVITATION_CODE_LENGTH: int = 8
+
+    # LLM API配置（可选）
+    LLM_PROVIDER: Optional[str] = None
+    LLM_API_KEY: Optional[str] = None
+    LLM_BASE_URL: Optional[str] = None
+    LLM_MODEL_NAME: Optional[str] = None
+
+    # 语音识别API配置（可选）
+    SPEECH_PROVIDER: Optional[str] = None
+    SPEECH_API_KEY: Optional[str] = None
+    SPEECH_APP_KEY: Optional[str] = None
+    SPEECH_REGION: Optional[str] = None
+
+    # CORS配置
+    CORS_ORIGINS: Optional[str] = None
 
 
 settings = Settings()
