@@ -27,27 +27,27 @@ function StatCard({
   icon = null,
   loading = false,
 }) {
-  // 根据variant定义样式
+  // 根据variant定义样式 - 使用CSS变量
   const variantStyles = {
     primary: {
-      borderColor: '#3B82F6',
-      iconColor: '#3B82F6',
-      bgColor: '#EFF6FF',
+      borderColor: 'var(--color-primary)',
+      iconColor: 'var(--color-primary)',
+      bgColor: 'var(--color-primary-light)',
     },
     success: {
-      borderColor: '#10B981',
-      iconColor: '#10B981',
+      borderColor: 'var(--color-success)',
+      iconColor: 'var(--color-success)',
       bgColor: '#ECFDF5',
     },
     warning: {
-      borderColor: '#F59E0B',
-      iconColor: '#F59E0B',
+      borderColor: 'var(--color-warning)',
+      iconColor: 'var(--color-warning)',
       bgColor: '#FEF3C7',
     },
     info: {
-      borderColor: '#64748B',
-      iconColor: '#64748B',
-      bgColor: '#F8FAFC',
+      borderColor: 'var(--color-secondary)',
+      iconColor: 'var(--color-secondary)',
+      bgColor: 'var(--color-bg-secondary)',
     },
   }
 
@@ -69,9 +69,9 @@ function StatCard({
       style={{
         height: '100%',
         borderLeft: `4px solid ${currentStyle.borderColor}`,
-        borderRadius: 12,
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-        transition: 'all 200ms ease',
+        borderRadius: 'var(--radius-lg)',
+        boxShadow: 'var(--shadow-sm)',
+        transition: 'var(--transition-base)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -81,12 +81,12 @@ function StatCard({
       hoverable={!loading}
       onMouseEnter={(e) => {
         if (loading) return
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)'
+        e.currentTarget.style.boxShadow = 'var(--shadow-lg)'
         e.currentTarget.style.transform = 'translateY(-2px)'
       }}
       onMouseLeave={(e) => {
         if (loading) return
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)'
+        e.currentTarget.style.boxShadow = 'var(--shadow-sm)'
         e.currentTarget.style.transform = 'translateY(0)'
       }}
     >
@@ -111,7 +111,7 @@ function StatCard({
         <Text
           style={{
             fontSize: 14,
-            color: '#64748B',
+            color: 'var(--color-text-secondary)',
             display: 'block',
             marginBottom: 12,
           }}
@@ -125,7 +125,7 @@ function StatCard({
             style={{
               fontSize: 32,
               fontWeight: 700,
-              color: '#1E293B',
+              color: 'var(--color-text-primary)',
               lineHeight: 1,
             }}
           >
@@ -136,7 +136,7 @@ function StatCard({
               style={{
                 fontSize: 16,
                 fontWeight: 500,
-                color: '#64748B',
+                color: 'var(--color-text-secondary)',
               }}
             >
               {unit}

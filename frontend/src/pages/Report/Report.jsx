@@ -140,8 +140,8 @@ function Report() {
               <Radar
                 name="得分"
                 dataKey="score"
-                stroke="#1890ff"
-                fill="#1890ff"
+                stroke="#3B82F6"
+                fill="#3B82F6"
                 fillOpacity={0.6}
               />
               <Tooltip />
