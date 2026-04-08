@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Row, Col, Typography } from 'antd'
 import StatCard from '@/components/Dashboard/StatCard'
+import { getUserStats } from '@/services/interviewService'
 
 const { Title } = Typography
 
@@ -11,7 +12,6 @@ function Dashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { getUserStats } = await import('@/services/interviewService')
         const data = await getUserStats()
         setStats({
           totalInterviews: data.total_interviews,
